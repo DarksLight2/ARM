@@ -21,7 +21,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Tealband\\Survey\\Providers\\SurveyServiceProvider"
+                "DarksLight2\\AiRequestsMonitoring\\Providers\\AiRequestsMonitoringProvider"
             ]
         }
     }
