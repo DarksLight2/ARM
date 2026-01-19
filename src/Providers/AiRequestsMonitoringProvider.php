@@ -16,7 +16,7 @@ class AiRequestsMonitoringProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'ai-monitor');
         $this->loadMigrationsFrom(__DIR__ . '/../../migrations/');
         $this->publishes([
-            __DIR__.'/../../resources/assets/app.css' => public_path('vendor/ai-monitor/ai-monitor.css'),
+            __DIR__.'/../../resources/assets/app.css' => public_path('vendor/ai-monitor/assets/app.css'),
         ], 'ai-monitor-assets');
 
         if(config('ai-monitor.enabled')) {
