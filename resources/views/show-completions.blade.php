@@ -1,3 +1,4 @@
+@php use DarksLight2\AiRequestsMonitoring\Enums\Completions\YandexStatus;use DarksLight2\AiRequestsMonitoring\Enums\Completions\OpenAiStatus; @endphp
 @extends('ai-monitor::layout', ['title' => 'AI Monitor — Request'])
 
 @section('content')
@@ -15,38 +16,45 @@
             </div>
 
             <div class="flex items-center justify-center gap-2">
-                <a href="{{ route('ai-monitor.dashboard') }}" class="inline-flex items-center justify-center rounded-xl bg-white/5 px-4 py-2 text-sm font-semibold text-white/80 ring-1 ring-white/10 backdrop-blur hover:bg-white/10 hover:ring-white/20">
+                <a href="{{ route('ai-monitor.dashboard') }}"
+                   class="inline-flex items-center justify-center rounded-xl bg-white/5 px-4 py-2 text-sm font-semibold text-white/80 ring-1 ring-white/10 backdrop-blur hover:bg-white/10 hover:ring-white/20">
                     Назад
                 </a>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 gap-4 lg:grid-cols-12">
-            <x-ai-monitor::metric-block
-                title="Общее количество токенов"
-                :value="$request->total_tokens"
-                hint="Вход + Выход"
-                class="lg:col-span-4"
-            />
-            <x-ai-monitor::metric-block
-                title="Промпт"
-                :value="$request->input_tokens"
-                hint="Вход"
-                class="lg:col-span-4"
-            />
-            <x-ai-monitor::metric-block
-                title="Ответ"
-                :value="$request->output_tokens"
-                hint="Выход"
-                class="lg:col-span-4"
-            />
+        @if($request->status !== YandexStatus::ConnectionError && $request->status !== OpenAiStatus::ConnectionError)
+            <div class="grid grid-cols-1 gap-4 lg:grid-cols-12">
+                <x-ai-monitor::metric-block
+                    title="Общее количество токенов"
+                    :value="$request->total_tokens"
+                    hint="Вход + Выход"
+                    class="lg:col-span-4"
+                />
+                <x-ai-monitor::metric-block
+                    title="Промпт"
+                    :value="$request->input_tokens"
+                    hint="Вход"
+                    class="lg:col-span-4"
+                />
+                <x-ai-monitor::metric-block
+                    title="Ответ"
+                    :value="$request->output_tokens"
+                    hint="Выход"
+                    class="lg:col-span-4"
+                />
 
-{{--            <div class="rounded-2xl bg-black/30 p-4 ring-1 ring-white/10 backdrop-blur lg:col-span-3">--}}
-{{--                <div class="text-xs font-semibold uppercase tracking-wide text-white/50">Latency</div>--}}
-{{--                <div class="mt-2 text-3xl font-semibold text-white/90">382<span class="text-base text-white/60"> ms</span></div>--}}
-{{--                <div class="mt-2 text-xs text-white/50">End-to-end</div>--}}
-{{--            </div>--}}
-        </div>
+                {{--            <div class="rounded-2xl bg-black/30 p-4 ring-1 ring-white/10 backdrop-blur lg:col-span-3">--}}
+                {{--                <div class="text-xs font-semibold uppercase tracking-wide text-white/50">Latency</div>--}}
+                {{--                <div class="mt-2 text-3xl font-semibold text-white/90">382<span class="text-base text-white/60"> ms</span></div>--}}
+                {{--                <div class="mt-2 text-xs text-white/50">End-to-end</div>--}}
+                {{--            </div>--}}
+            </div>
+        @else
+            <div class="inline-flex w-full items-center rounded-2xl px-4 py-2 font-semibold ring-1 bg-red-400/10 text-red-200 ring-red-400/20">
+                {{ $request->meta['error'] }}
+            </div>
+        @endif
 
         {{-- Secondary stats --}}
         <div class="grid grid-cols-1 gap-4 lg:grid-cols-12">
@@ -79,24 +87,33 @@
                     <div class="text-sm font-semibold text-white/80">Мета запроса</div>
                 </div>
 
-{{--                <div class="grid grid-cols-1 gap-3 px-4 py-4 sm:grid-cols-2">--}}
-{{--                    <div class="rounded-xl bg-black/30 p-3 ring-1 ring-white/10">--}}
-{{--                        <div class="text-xs text-white/50">URL</div>--}}
-{{--                        <div class="mt-1 truncate text-sm text-white/80">https://api.openai.com/v1/chat/completions</div>--}}
-{{--                    </div>--}}
-{{--                    <div class="rounded-xl bg-black/30 p-3 ring-1 ring-white/10">--}}
-{{--                        <div class="text-xs text-white/50">Метод</div>--}}
-{{--                        <div class="mt-1 text-sm text-white/80">POST</div>--}}
-{{--                    </div>--}}
-{{--                    <div class="rounded-xl bg-black/30 p-3 ring-1 ring-white/10">--}}
-{{--                        <div class="text-xs text-white/50">Окружение</div>--}}
-{{--                        <div class="mt-1 text-sm text-white/80">local</div>--}}
-{{--                    </div>--}}
-{{--                    <div class="rounded-xl bg-black/30 p-3 ring-1 ring-white/10">--}}
-{{--                        <div class="text-xs text-white/50">Хост</div>--}}
-{{--                        <div class="mt-1 text-sm text-white/80">server-01</div>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
+                <div class="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2">
+                    <div class="rounded-xl bg-black/30 p-3 ring-1 ring-white/10">
+                        <div class="text-xs text-white/50">URL</div>
+                        <div class="mt-1 truncate text-sm text-white/80">{{ $request->meta['url'] ?? 'N/A' }}</div>
+                    </div>
+                    <div class="rounded-xl bg-black/30 p-3 ring-1 ring-white/10">
+                        <div class="text-xs text-white/50">Метод</div>
+                        <div class="mt-1 text-sm text-white/80">{{ $request->meta['method'] ?? 'N/A' }}</div>
+                    </div>
+                    <div class="rounded-xl bg-black/30 p-3 ring-1 ring-white/10">
+                        <div class="text-xs text-white/50">Окружение</div>
+                        <div class="mt-1 text-sm text-white/80">{{ $request->meta['env'] ?? 'N/A' }}</div>
+                    </div>
+                    <div class="rounded-xl bg-black/30 p-3 ring-1 ring-white/10">
+                        <div class="text-xs text-white/50">Протокол</div>
+                        <div class="mt-1 text-sm text-white/80">{{ $request->meta['protocol'] ?? 'N/A' }}</div>
+                    </div>
+                </div>
+
+                <div class="px-4 pb-4">
+                    <div class="rounded-xl bg-black/30 p-3 ring-1 ring-white/10">
+                        <div class="text-xs text-white/50">Заголовки</div>
+                        @foreach($request->meta['headers'] as $header => $val)
+                            <div class="mt-1 text-sm"><span class="font-bold text-white/50">{{ $header }}:</span> <span class="text-white/80">{{ $val[0] }}</span></div>
+                        @endforeach
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -105,7 +122,8 @@
                 <div class="text-sm font-semibold text-white/80">Сообщения</div>
 
                 <div class="flex items-center gap-2">
-                <span class="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/70 ring-1 ring-white/10">
+                <span
+                    class="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/70 ring-1 ring-white/10">
                     {{ count($messages) }} сообщений
                 </span>
                 </div>
@@ -127,7 +145,8 @@
                     </span>
                             <span class="text-xs text-white/40">{{ strlen($message['content']) }} симв.</span>
                         </div>
-                        <pre class="whitespace-pre-wrap px-4 pb-4 text-sm leading-relaxed text-white/80">{{ $message['content'] }}</pre>
+                        <pre
+                            class="whitespace-pre-wrap px-4 pb-4 text-sm leading-relaxed text-white/80">{{ $message['content'] }}</pre>
                     </div>
                 @endforeach
             </div>
@@ -137,21 +156,25 @@
             <div class="rounded-2xl bg-white/5 ring-1 ring-white/10 backdrop-blur lg:col-span-6">
                 <div class="flex items-center justify-between border-b border-white/10 px-4 py-3">
                     <div class="text-sm font-semibold text-white/80">Запрос (сырой)</div>
-                    <button class="rounded-xl bg-white/5 px-3 py-1.5 text-xs font-semibold text-white/70 ring-1 ring-white/10 hover:bg-white/10">
+                    <button
+                        class="rounded-xl bg-white/5 px-3 py-1.5 text-xs font-semibold text-white/70 ring-1 ring-white/10 hover:bg-white/10">
                         Copy
                     </button>
                 </div>
-                <pre class="max-h-130 overflow-auto p-4 text-xs leading-relaxed text-white/80"><code>{{ json_encode($request->request, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</code></pre>
+                <pre
+                    class="max-h-130 overflow-auto p-4 text-xs leading-relaxed text-white/80"><code>{{ json_encode($request->request, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</code></pre>
             </div>
 
             <div class="rounded-2xl bg-white/5 ring-1 ring-white/10 backdrop-blur lg:col-span-6">
                 <div class="flex items-center justify-between border-b border-white/10 px-4 py-3">
                     <div class="text-sm font-semibold text-white/80">Ответ (сырой)</div>
-                    <button class="rounded-xl bg-white/5 px-3 py-1.5 text-xs font-semibold text-white/70 ring-1 ring-white/10 hover:bg-white/10">
+                    <button
+                        class="rounded-xl bg-white/5 px-3 py-1.5 text-xs font-semibold text-white/70 ring-1 ring-white/10 hover:bg-white/10">
                         Copy
                     </button>
                 </div>
-                <pre class="max-h-130 overflow-auto p-4 text-xs leading-relaxed text-white/80"><code>{{ json_encode($request->response, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</code></pre>
+                <pre
+                    class="max-h-130 overflow-auto p-4 text-xs leading-relaxed text-white/80"><code>{{ json_encode($request->response, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</code></pre>
             </div>
         </div>
 

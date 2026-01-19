@@ -4,6 +4,7 @@ namespace DarksLight2\AiRequestsMonitoring;
 
 use Illuminate\Http\Client\Request;
 use Illuminate\Http\Client\Response;
+use Illuminate\Http\Client\ConnectionException;
 use DarksLight2\AiRequestsMonitoring\Recorders\Yandex\CompletionsRecorder as YandexCompletionsRecorder;
 use DarksLight2\AiRequestsMonitoring\Recorders\OpenAI\CompletionsRecorder as OpenAICompletionsRecorder;
 use DarksLight2\AiRequestsMonitoring\Recorders\OpenAI\EmbeddingRecorder as OpenAIEmbeddingRecorder;
@@ -97,6 +98,18 @@ class AiProviderResolver
             ]
         ],
     ];
+
+    public static function connectionFailed(Request $request, ConnectionException $exception): void
+    {
+        $urlData = parse_url($request->url());
+        $provider = self::$providers[$urlData['host']] ?? null;
+
+        if(is_null($provider)) return;
+
+        $operation = $provider['operations'][$urlData['path']];
+        $recorder = new $operation['recorder'];
+        $recorder->connectionFailed($request, $exception, $provider['name'], $urlData['path'], $operation['name']);
+    }
 
     public static function handle(Request $request, Response $response): void
     {

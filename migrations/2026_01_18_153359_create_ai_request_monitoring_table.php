@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('ai_request_monitoring', function (Blueprint $table) {
             $table->ulid('id')->primary();
             $table->string('provider');
+            $table->string('uri');
             $table->string('operation_name');
             $table->string('operation');
             $table->string('model');

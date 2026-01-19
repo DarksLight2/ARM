@@ -5,7 +5,9 @@ namespace DarksLight2\AiRequestsMonitoring\Providers;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Http\Client\Events\ResponseReceived;
+use Illuminate\Http\Client\Events\ConnectionFailed;
 use DarksLight2\AiRequestsMonitoring\Listeners\HttpResponseReceived;
+use DarksLight2\AiRequestsMonitoring\Listeners\HttpConnectionFailed;
 
 class AiRequestsMonitoringProvider extends ServiceProvider
 {
@@ -21,6 +23,8 @@ class AiRequestsMonitoringProvider extends ServiceProvider
 
         if(config('ai-monitor.enabled')) {
             Event::listen(ResponseReceived::class, HttpResponseReceived::class);
+            Event::listen(ConnectionFailed::class, HttpConnectionFailed::class);
+
         }
     }
 }

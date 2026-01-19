@@ -4,6 +4,7 @@ namespace DarksLight2\AiRequestsMonitoring\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use DarksLight2\AiRequestsMonitoring\Casts\ProviderFinishStatusCast;
 
 class AiRequestMonitoring extends Model
 {
@@ -24,6 +25,8 @@ class AiRequestMonitoring extends Model
         'request',
         'response',
         'messages',
+        'status',
+        'meta',
     ];
 
     protected $casts = [
@@ -31,5 +34,7 @@ class AiRequestMonitoring extends Model
         'request' => 'json:unicode',
         'response' => 'json:unicode',
         'messages' => 'json:unicode',
+        'meta' => 'json:unicode',
+        'status' => ProviderFinishStatusCast::class,
     ];
 }

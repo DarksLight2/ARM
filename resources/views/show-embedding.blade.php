@@ -79,22 +79,31 @@
                     <div class="text-sm font-semibold text-white/80">Мета запроса</div>
                 </div>
 
-                <div class="grid grid-cols-1 gap-3 px-4 py-4 sm:grid-cols-2">
+                <div class="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2">
                     <div class="rounded-xl bg-black/30 p-3 ring-1 ring-white/10">
                         <div class="text-xs text-white/50">URL</div>
-                        <div class="mt-1 truncate text-sm text-white/80">https://api.openai.com/v1/chat/completions</div>
+                        <div class="mt-1 truncate text-sm text-white/80">{{ $request->meta['url'] ?? 'N/A' }}</div>
                     </div>
                     <div class="rounded-xl bg-black/30 p-3 ring-1 ring-white/10">
                         <div class="text-xs text-white/50">Метод</div>
-                        <div class="mt-1 text-sm text-white/80">POST</div>
+                        <div class="mt-1 text-sm text-white/80">{{ $request->meta['method'] ?? 'N/A' }}</div>
                     </div>
                     <div class="rounded-xl bg-black/30 p-3 ring-1 ring-white/10">
                         <div class="text-xs text-white/50">Окружение</div>
-                        <div class="mt-1 text-sm text-white/80">local</div>
+                        <div class="mt-1 text-sm text-white/80">{{ $request->meta['env'] ?? 'N/A' }}</div>
                     </div>
                     <div class="rounded-xl bg-black/30 p-3 ring-1 ring-white/10">
-                        <div class="text-xs text-white/50">Хост</div>
-                        <div class="mt-1 text-sm text-white/80">server-01</div>
+                        <div class="text-xs text-white/50">Протокол</div>
+                        <div class="mt-1 text-sm text-white/80">{{ $request->meta['protocol'] ?? 'N/A' }}</div>
+                    </div>
+                </div>
+
+                <div class="px-4 pb-4">
+                    <div class="rounded-xl bg-black/30 p-3 ring-1 ring-white/10">
+                        <div class="text-xs text-white/50">Заголовки</div>
+                        @foreach($request->meta['headers'] as $header => $val)
+                            <div class="mt-1 text-sm"><span class="font-bold text-white/50">{{ $header }}:</span> <span class="text-white/80">{{ $val[0] }}</span></div>
+                        @endforeach
                     </div>
                 </div>
             </div>
